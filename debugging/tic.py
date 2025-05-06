@@ -2,7 +2,7 @@
 def print_board(board):
     for row in board:
         print(" | ".join(row))
-        print(" --------")
+        print("-----------")
 
 def check_winner(board):
     for row in board:
@@ -20,14 +20,59 @@ def check_winner(board):
         return True
 
     return False
+def check_draw(board):
+    for row in board:
+        for cell in row:
+            if cell == " ":
+                return False
+    return not check_winner(board)
+started = "X"
 
 def tic_tac_toe():
+    global started
     board = [[" "]*3 for _ in range(3)]
-    player = "X"
-    while not check_winner(board):
+    player = started
+    while not check_winner(board) and not check_draw(board):
         print_board(board)
-        row = int(input("Enter row (0, 1, or 2) for player " + player + ": "))
-        col = int(input("Enter column (0, 1, or 2) for player " + player + ": "))
+        intentos = 0
+        while intentos < 3:
+            try:
+                row_str = input(f"Enter row (0, 1, or 2) for player {player}: ")
+                row = int(row_str)
+                if 0 <= row <= 2:
+                    break
+                else:
+                    print("number not valid")
+                    intentos += 1
+            except ValueError:
+                print("Invalid input. please enter a number.")
+                intentos += 1
+            if intentos == 3:
+                print(f"player {player} don't play, BUUHH LOSER!!")
+                print_board(board)
+                return
+            if intentos > 0:
+                continue
+        while True:
+            try:
+                col_str = input(f"Enter column (0, 1, or 2) for player {player}: ")
+                col = int(col_str)
+                if 0 <= col <= 2:
+                    break
+                else:
+                    print("number not valid")
+                    intentos += 1
+            except ValueError:
+                print("Invalid input. please enter a number.")
+                intentos += 1
+            if intentos >= 3:
+                print(f"player {player} don't play, BUUHH LOSER!!")
+                print_board(board)
+                return
+            if intentos > 0 and intentos < 3:
+                continue
+            elif intentos >= 3:
+                break
         if board[row][col] == " ":
             board[row][col] = player
             if player == "X":
@@ -38,6 +83,17 @@ def tic_tac_toe():
             print("That spot is already taken! Try again.")
 
     print_board(board)
-    print("Player " + player + " wins!")
+    if check_winner(board):
+            win = "O" if started == player else started
+            print(f"Player {win} wins!")
+    elif check_draw(board):
+        print("It's a draw")
+        if started == "X":
+            started = "O"
+        else:
+            started = "X"
+        play_again = input("Do you want to play again? (y/n): ").lower()
+        if play_again == "y":
+            tic_tac_toe()
 
 tic_tac_toe()
